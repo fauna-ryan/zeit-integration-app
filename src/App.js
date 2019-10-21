@@ -1,24 +1,34 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, { useEffect, useState } from 'react';
 
 function App() {
+  const [isLoading, setLoading] = useState(true);
+  const [collections, setCollections] = useState([]);
+  const hasCollections = collections.length > 0;
+
+  useEffect(() => {
+    fetch('/api/collections')
+      .then(response => response.json())
+      .then(collections => {
+        setCollections(collections);
+        setLoading(false);
+      });
+  }, [setCollections, setLoading]);
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div style={{ padding: 16 }}>
+      <h1>FaunaDB Zeit Integration</h1>
+      <h2>Collections</h2>
+      {isLoading ? (
+        <h5>Loading...</h5>
+      ) : hasCollections ? (
+        <ul>
+          {collections.map(({ name }) => (
+            <li key={name}>{name}</li>
+          ))}
+        </ul>
+      ) : (
+        <h5>No Collections</h5>
+      )}
     </div>
   );
 }
